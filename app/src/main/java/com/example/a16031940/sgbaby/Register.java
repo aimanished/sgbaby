@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,6 +24,7 @@ public class Register extends AppCompatActivity {
     EditText email,cfmPass,password;
     private FirebaseAuth mAuth;
 
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,7 @@ public class Register extends AppCompatActivity {
         email = findViewById(R.id.reg_email);
         cfmPass = findViewById(R.id.reg_cfmpassword);
         password = findViewById(R.id.reg_password);
+        progressBar = findViewById(R.id.progressBar2);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -48,15 +51,14 @@ public class Register extends AppCompatActivity {
         btnReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                progressBar.setVisibility(View.VISIBLE);
+                String emailText = email.getText().toString();
+                String passText = password.getText().toString();
+                String cfmPassText = cfmPass.getText().toString();
                 if (email.getText().toString().equals("") || password.getText().toString().equals("")) {
                     Toast.makeText(Register.this, "No empty fields, please.", Toast.LENGTH_SHORT).show();
-                }else if(password.getText().equals(cfmPass.getText())){
+                }else if(passText.equals(cfmPassText)){
                     // TODO: implement Firebase Authentication - register
-                    String emailText = email.getText().toString();
-                    String passText = password.getText().toString();
-                    String cfmPassText = cfmPass.getText().toString();
-
                     mAuth.createUserWithEmailAndPassword(emailText, passText)
                             .addOnCompleteListener(Register.this, new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -70,6 +72,7 @@ public class Register extends AppCompatActivity {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
                                                         if (task.isSuccessful()) {
+                                                            progressBar.setVisibility(View.INVISIBLE);
                                                             Log.i("Email", "Email sent.");
                                                             Toast.makeText(Register.this, "Verification email sent", Toast.LENGTH_SHORT).show();
                                                             Intent intent = new Intent(Register.this,SetUpActivity.class);
@@ -79,6 +82,7 @@ public class Register extends AppCompatActivity {
                                                             Log.e("Email", "sendEmailVerification", task.getException());
                                                             Toast.makeText(Register.this, "Failed to send verification email", Toast.LENGTH_SHORT).show();
                                                         }
+                                                        progressBar.setVisibility(View.INVISIBLE);
                                                     }
                                                 });
                                     } else {
@@ -88,13 +92,14 @@ public class Register extends AppCompatActivity {
                                         Log.e("Create Email", "createUserWithEmail:failure", task.getException());
                                         Toast.makeText(Register.this, "Authentication failed: " + reason,
                                                 Toast.LENGTH_SHORT).show();
+                                        progressBar.setVisibility(View.INVISIBLE);
                                     }
                                 }
                             });
                 } else {
 
                   Toast.makeText(Register.this,"Password mismatch",Toast.LENGTH_SHORT).show();
-
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
 
             }

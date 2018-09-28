@@ -1,29 +1,85 @@
 package com.example.a16031940.sgbaby;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Home extends AppCompatActivity {
 
     private Toolbar mainToolbar;
     private FirebaseAuth mAuth;
+    private FirebaseFirestore firebaseFirestore;
+
+    private FloatingActionButton addPostBtn;
+    private String current_user_id;
+
+    private RecyclerView blog_recycler_view;
+    private List<BlogPost> blogPostList;
+    private BlogRecyclerViewAdapter blogRecyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        blog_recycler_view = findViewById(R.id.BlogrecyclerView);
+        firebaseFirestore = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         mainToolbar = findViewById(R.id.MainToolBar);
+        addPostBtn = findViewById(R.id.add_post_btn);
+        blogPostList = new ArrayList<>();
+        blogRecyclerViewAdapter = new BlogRecyclerViewAdapter(blogPostList);
         setSupportActionBar(mainToolbar);
         getSupportActionBar().setTitle("SGBABY");
+
+blog_recycler_view.setLayoutManager(new LinearLayoutManager(getBaseContext()));
+blog_recycler_view.setAdapter(blogRecyclerViewAdapter);
+        addPostBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Home.this,NewPostActivity.class);
+                startActivity(intent);
+            }
+        });
+        firebaseFirestore.collection("Posts").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                for(DocumentChange doc: documentSnapshots.getDocumentChanges()){
+                    if(doc.getType() == DocumentChange.Type.ADDED){
+                        BlogPost blogPost = doc.getDocument().toObject(BlogPost.class);
+                        blogPostList.add(blogPost);
+
+                        blogRecyclerViewAdapter.notifyDataSetChanged();
+
+                    }
+                }
+            }
+        });
+
     }
 
     @Override
@@ -32,6 +88,23 @@ public class Home extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if(currentUser == null){
             sendToLogin();
+        }else{
+            current_user_id = mAuth.getCurrentUser().getUid();
+            firebaseFirestore.collection("Users").document(current_user_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if(task.isSuccessful()){
+                        if(!task.getResult().exists()){
+                            Intent setUpIntent = new Intent(Home.this,SetUpActivity.class);
+                            startActivity(setUpIntent);
+                            finish();
+                        }
+                    }else{
+                        String error = task.getException().getMessage().toString();
+                        Toast.makeText(Home.this, error, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
     }
 
