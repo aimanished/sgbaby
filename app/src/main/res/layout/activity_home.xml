@@ -75,35 +75,59 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/BlogrecyclerView"
+
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/mainBottomNav"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/description"
+            app:menu="@menu/mid_menu" />
+
+        <FrameLayout
+            android:id="@+id/main_container"
             android:layout_width="match_parent"
-            android:layout_height="414dp"
+            android:layout_height="444dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/description">
+            app:layout_constraintTop_toBottomOf="@+id/mainBottomNav">
 
-        </android.support.v7.widget.RecyclerView>
+        </FrameLayout>
+
+        <!--<android.support.v7.widget.RecyclerView-->
+            <!--android:id="@+id/BlogrecyclerView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="414dp"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:layout_marginStart="8dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintHorizontal_bias="0.0"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/description">-->
+
+        <!--</android.support.v7.widget.RecyclerView>-->
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/add_post_btn"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="100dp"
+            android:layout_marginBottom="36dp"
+            android:layout_marginEnd="36dp"
             android:clickable="true"
             app:fabSize="mini"
-            app:layout_constraintBottom_toBottomOf="@+id/BlogrecyclerView"
-            app:layout_constraintEnd_toEndOf="@+id/BlogrecyclerView"
-            app:layout_constraintHorizontal_bias="0.994"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/baseline_add_black_48" />
 
 
